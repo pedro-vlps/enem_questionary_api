@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -25,6 +25,7 @@ class QuestionAssetResponse(BaseModel):
 
 
 class GeneratedQuestionResponse(BaseModel):
+    question_source: Literal["api", "database"] | None = None
     id: UUID
     topic: str
     subtopic: str

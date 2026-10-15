@@ -14,8 +14,6 @@ from src.services.question_asset_service import (
 from src.services.question_service import QuestionService
 from src.configs.configs import settings
 
-client = OpenAI()
-
 
 async def generate_enem_question(
     topic: str,
@@ -25,6 +23,10 @@ async def generate_enem_question(
     *,
     max_attempts: int = 4,
 ) -> dict:
+    if not settings.QUESTION_GENERATION_ENABLED:
+        return await QuestionService.get_random_question(topic=topic, db=db)
+
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     last_error = None
     selected_context = build_context_fn(topic)
 
@@ -66,11 +68,12 @@ async def generate_enem_question(
             explanation_e=payload["explanation_e"],
             correct_answer=payload["correct_answer"],
         )
-        return await QuestionService.persist_question(
+        result = await QuestionService.persist_question(
             question=question,
             question_assets=question_assets,
             db=db,
         )
+        return {**result, "question_source": "api"}
 
     raise last_error or ValueError("Unable to generate a valid ENEM question.")
 
@@ -84,6 +87,12 @@ async def generate_enem_question_with_support_materials(
     *,
     max_attempts: int = 4,
 ) -> dict[str, Any]:
+    if not settings.QUESTION_GENERATION_ENABLED:
+        return await QuestionService.get_random_question(
+            topic=topic, db=db, support_material_ids=support_material_ids
+        )
+
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     last_error = None
     selected_context = build_context_fn(topic)
     support_materials = await get_question_assets_by_ids(
@@ -140,10 +149,11 @@ async def generate_enem_question_with_support_materials(
             explanation_e=payload["explanation_e"],
             correct_answer=payload["correct_answer"],
         )
-        return await QuestionService.persist_question_with_existing_assets(
+        result = await QuestionService.persist_question_with_existing_assets(
             question=question,
             existing_assets=support_materials,
             db=db,
         )
+        return {**result, "question_source": "api"}
 
     raise last_error or ValueError("Unable to generate a valid ENEM question.")

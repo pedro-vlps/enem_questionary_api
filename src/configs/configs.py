@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_HOST: str
     POSTGRES_PORT: int
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: str = ""
+    QUESTION_GENERATION_ENABLED: bool = False
     OPENAI_TEXT_MODEL: str = "gpt-5.4-mini"
     OPENAI_IMAGE_MODEL: str = "gpt-image-1"
     OPENAI_IMAGE_SIZE: str = "1024x1024"

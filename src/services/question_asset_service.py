@@ -13,8 +13,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.configs.configs import settings
 from src.utils.s3_storage import S3Storage
 
-client = OpenAI()
-
 if TYPE_CHECKING:
     from src.models.models import QuestionAssets
 
@@ -394,6 +392,7 @@ def _attach_uploaded_visual_asset_storage(
 
 
 def _generate_image_bytes(*, prompt: str) -> tuple[bytes, str, str]:
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     try:
         response = client.images.generate(
             model=settings.OPENAI_IMAGE_MODEL,

@@ -1,3 +1,12 @@
+# Changelog
+
+## v0.5.0 - 2026-10-15
+
+- Add environment-controlled question generation with database retrieval as the default.
+- Return question sources and preserve support materials when reusing stored questions.
+- Initialize OpenAI clients only when generation is requested.
+- Add regression tests for generation controls and stored question retrieval.
+
 ## v0.4.0
 
 - Manual questions route added

@@ -1,5 +1,8 @@
 from typing import Any
+from uuid import UUID
 
+from fastapi import HTTPException
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.models import QuestionAssetQuestions, QuestionAssets, Questions
@@ -12,6 +15,52 @@ from src.services.question_asset_service import (
 
 
 class QuestionService:
+    @staticmethod
+    async def get_random_question(
+        *,
+        topic: str,
+        db: AsyncSession,
+        support_material_ids: list[UUID] | None = None,
+    ) -> dict[str, Any]:
+        query = select(Questions).where(Questions.topic == topic)
+        # Every selected material must already be linked to the stored question.
+        for asset_id in set(support_material_ids or []):
+            query = query.where(
+                select(QuestionAssetQuestions.question_id)
+                .where(
+                    QuestionAssetQuestions.question_id == Questions.id,
+                    QuestionAssetQuestions.question_asset_id == asset_id,
+                )
+                .exists()
+            )
+
+        result = await db.execute(query.order_by(func.random()).limit(1))
+        question = result.scalar_one_or_none()
+        if question is None:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    "No stored question is available for this topic"
+                    + (
+                        " and the selected support materials"
+                        if support_material_ids
+                        else ""
+                    )
+                    + ". AI question generation is disabled."
+                ),
+            )
+
+        assets_result = await db.execute(
+            select(QuestionAssets)
+            .join(QuestionAssetQuestions)
+            .where(QuestionAssetQuestions.question_id == question.id)
+            .order_by(QuestionAssets.display_order)
+        )
+        payload = QuestionService.serialize_question(
+            question, list(assets_result.scalars().all())
+        )
+        return {**payload, "question_source": "database"}
+
     @staticmethod
     async def create_question(
         request: CreateQuestionRequest,
