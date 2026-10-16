@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "api-crud-generate-libary @ git+https://github.com/pedro-vlps/api_crud_generate_libary.git",
+    "api-crud-generate-libary @ git+https://github.com/pedro-vlps/api_crud_generate_libary.git@999132b4fca77179c0d585fd9fc18afe824706ac",
     "openai (>=2.37.0,<3.0.0)",
     "boto3 (>=1.40.67,<2.0.0)",
     "uvicorn (>=0.47.0,<0.48.0)",

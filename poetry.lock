@@ -61,7 +61,7 @@ sqlalchemy = ">=2.0.49,<3.0.0"
 [package.source]
 type = "git"
 url = "https://github.com/pedro-vlps/api_crud_generate_libary.git"
-reference = "HEAD"
+reference = "999132b4fca77179c0d585fd9fc18afe824706ac"
 resolved_reference = "999132b4fca77179c0d585fd9fc18afe824706ac"
 
 [[package]]
@@ -1711,4 +1711,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "cdaa95bcac8cd80667df59e6c21da815948bb84a89b3ecc96e047ec41c849e37"
+content-hash = "6b6759aab8bde69ec76a94bf19bc769a5b8f883343530ff7db1b2e8d7917b0eb"
